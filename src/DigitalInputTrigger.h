@@ -16,13 +16,13 @@
 
 /// @brief Class describing a generic output on a GPIO pin
 class DigitalInputTrigger : public PeriodicTask {
-	public:
+	// All methods are protected since this should be inherited not instanced
+	protected:
 		DigitalInputTrigger(int Pin);
 		bool begin();
 		String getConfig();
 		bool setConfig(String config);
 
-	protected:
 		/// @brief Map for input modes
 		std::map<String, int> modes = {{"Input", INPUT}, {"Pullup", INPUT_PULLUP}, {"Pulldown", INPUT_PULLDOWN}, {"Open Drain", OPEN_DRAIN}};
 
