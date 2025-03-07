@@ -57,7 +57,7 @@ class DigitalInputTrigger : public PeriodicTask {
 		ulong currentMillis = 0;
 
 		/// @brief Unix timestamp at last input trigger
-		ulong lasRunTime = 0;
+		ulong lastRunTime = 0;
 
 		bool configureInput();
 		void clearTrigger();

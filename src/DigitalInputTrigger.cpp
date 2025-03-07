@@ -104,7 +104,7 @@ bool DigitalInputTrigger::configureInput() {
 void DigitalInputTrigger::runTask(long elapsed) {
 	if (elapsed >= task_config.taskPeriod) {
 		if (triggered) {
-			ulong time = lasRunTime + elapsedMillis / 1000;
+			ulong time = lastRunTime + elapsedMillis / 1000;
 			Logger.println("Event " + String(digital_config.id) + " triggered at " + String(time) + " " + String(elapsedMillis % 1000) + "ms");
 			clearTrigger();
 		}
@@ -114,7 +114,7 @@ void DigitalInputTrigger::runTask(long elapsed) {
 /// @brief Clears a triggered event
 void DigitalInputTrigger::clearTrigger() {
 	currentMillis = millis();
-	lasRunTime = TimeInterface::getEpoch();
+	lastRunTime = TimeInterface::getEpoch();
 	triggered = false;
 }
 
