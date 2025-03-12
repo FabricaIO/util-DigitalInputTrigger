@@ -10,15 +10,17 @@ DigitalInputTrigger::DigitalInputTrigger(int Pin) {
 /// @brief Starts the Digital Input Trigger
 /// @return True on success
 bool DigitalInputTrigger::begin() {
-	// Waits for time to be set
-	int timeout = 0;
-	do {
-		delay(1000);
-		timeout++;
-	} while (TimeInterface::getEpoch() < 10000 && timeout < 10);
-	// Check if time was set
-	if (TimeInterface::getEpoch() < 10000) {
-		return false;
+	if (Configuration::currentConfig.useNTP) {
+		// Waits for time to be set
+		int timeout = 0;
+		do {
+			delay(1000);
+			timeout++;
+		} while (TimeInterface::getEpoch() < 10000 && timeout < 20);
+		// Check if time was set
+		if (TimeInterface::getEpoch() < 10000) {
+			return false;
+		}
 	}
 	// Set initial time information
 	clearTrigger();

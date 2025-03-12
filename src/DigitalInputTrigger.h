@@ -12,6 +12,7 @@
 #include <PeriodicTask.h>
 #include <TimeInterface.h>
 #include <FunctionalInterrupt.h>
+#include <Configuration.h>
 #include <map>
 
 /// @brief Class describing a generic output on a GPIO pin
