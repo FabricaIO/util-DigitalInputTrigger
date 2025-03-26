@@ -63,6 +63,6 @@ class DigitalInputTrigger : public PeriodicTask {
 		bool configureInput();
 		void clearTrigger();
 		void trigger();
-		void runTask(long elapsed);
+		void runTask(ulong elapsed);
 		JsonDocument addAdditionalConfig();
 };

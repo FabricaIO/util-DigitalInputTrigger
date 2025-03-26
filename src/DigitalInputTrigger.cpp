@@ -103,7 +103,7 @@ bool DigitalInputTrigger::configureInput() {
 
 /// @brief Runs the task wanted by the input trigger
 /// @param elapsed The time elapsed since last checked
-void DigitalInputTrigger::runTask(long elapsed) {
+void DigitalInputTrigger::runTask(ulong elapsed) {
 	if (taskPeriodTriggered(elapsed)) {
 		if (triggered) {
 			ulong time = lastRunTime + elapsedMillis / 1000;
