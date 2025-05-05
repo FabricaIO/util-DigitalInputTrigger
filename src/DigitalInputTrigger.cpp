@@ -49,7 +49,7 @@ String DigitalInputTrigger::getConfig() {
 	doc["Trigger"]["options"][6] = "Low with Wakeup";
 	doc["Trigger"]["options"][7] = "High with Wakeup";
 	doc["id"] = digital_config.id;
-	doc["taskName"] = task_config.taskName;
+	doc["taskName"] = task_config.get_taskName();
 	doc["taskPeriod"] = task_config.taskPeriod;
 	doc["taskEnabled"] = digital_config.taskEnabled;
 
@@ -80,7 +80,7 @@ bool DigitalInputTrigger::setConfig(String config) {
 	digital_config.trigger = doc["Trigger"]["current"].as<String>();
 	digital_config.id = doc["id"].as<int>();
 	digital_config.taskEnabled = doc["taskEnabled"].as<bool>();
-	task_config.taskName = doc["taskName"].as<std::string>();
+	task_config.set_taskName(doc["taskName"].as<std::string>());
 	task_config.taskPeriod = doc["taskPeriod"].as<long>();
 
 	if(configureInput()) {
