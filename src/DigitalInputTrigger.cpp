@@ -65,7 +65,7 @@ String DigitalInputTrigger::getConfig() {
 /// @return True on success
 bool DigitalInputTrigger::setConfig(String config) {
 	// Allocate the JSON document
-  	JsonDocument doc;
+	JsonDocument doc;
 	// Deserialize file contents
 	DeserializationError error = deserializeJson(doc, config);
 	// Test if parsing succeeds.
@@ -105,8 +105,22 @@ bool DigitalInputTrigger::configureInput() {
 /// @param elapsed The time elapsed since last checked
 void DigitalInputTrigger::runTask(ulong elapsed) {
 	if (taskPeriodTriggered(elapsed)) {
-		if (triggered) {
-			ulong time = lastRunTime + elapsedMillis / 1000;
+		ulong cached_interrupt_time;
+		ulong cached_current_millis;
+		ulong cached_last_runtime;
+		bool is_triggered;
+		portENTER_CRITICAL(&spinlock);
+		is_triggered = triggered;
+		if (is_triggered) {
+			cached_interrupt_time = interrupt_time;
+			cached_current_millis = currentMillis;
+			cached_last_runtime = lastRunTime;
+		}
+		portEXIT_CRITICAL(&spinlock);
+		if (is_triggered) {
+			elapsedMillis = (cached_interrupt_time / 1000) - cached_current_millis;
+			ulong time = cached_last_runtime + elapsedMillis / 1000;
+			portEXIT_CRITICAL(&spinlock);
 			Logger.println("Event " + String(digital_config.id) + " triggered at " + String(time) + " " + String(elapsedMillis % 1000) + "ms");
 			clearTrigger();
 		}
@@ -115,15 +129,19 @@ void DigitalInputTrigger::runTask(ulong elapsed) {
 
 /// @brief Clears a triggered event
 void DigitalInputTrigger::clearTrigger() {
-	currentMillis = millis();
-	lastRunTime = TimeInterface::getEpoch();
+	ulong current = millis();
+	ulong epoch = TimeInterface::getEpoch();
+	portENTER_CRITICAL(&spinlock);
+	currentMillis = current;
+	lastRunTime = epoch;
 	triggered = false;
+	portEXIT_CRITICAL(&spinlock);
 }
 
 /// @brief ISR for a triggered event
-void DigitalInputTrigger::trigger() {
-	if (!triggered) {
-		triggered = true;
-		elapsedMillis = millis() - currentMillis;
+void IRAM_ATTR DigitalInputTrigger::trigger() {
+	bool expected = false;
+	if (triggered.compare_exchange_strong(expected, true)) {
+		interrupt_time.store(esp_timer_get_time());
 	}
 }

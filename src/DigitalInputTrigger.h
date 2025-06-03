@@ -14,6 +14,7 @@
 #include <FunctionalInterrupt.h>
 #include <Configuration.h>
 #include <map>
+#include <atomic>
 
 /// @brief Class describing a generic output on a GPIO pin
 class DigitalInputTrigger : public PeriodicTask {
@@ -23,6 +24,9 @@ class DigitalInputTrigger : public PeriodicTask {
 		bool begin();
 		String getConfig();
 		bool setConfig(String config);
+		
+		// Mutex for thread safe ISR
+		portMUX_TYPE spinlock = portMUX_INITIALIZER_UNLOCKED;
 
 		/// @brief Map for input modes
 		std::map<String, int> modes = {{"Input", INPUT}, {"Pullup", INPUT_PULLUP}, {"Pulldown", INPUT_PULLDOWN}, {"Open Drain", OPEN_DRAIN}};
@@ -49,10 +53,13 @@ class DigitalInputTrigger : public PeriodicTask {
 		} digital_config;
 
 		/// @brief Button triggered event
-		volatile bool triggered = false;
+		std::atomic<bool> triggered{false};
+
+		/// @brief Records time of last interrupt call
+		std::atomic<uint64_t> interrupt_time{0};
 
 		/// @brief Milliseconds elapsed since last input trigger
-		volatile ulong elapsedMillis = 0;
+		std::atomic<ulong> elapsedMillis{0};
 		
 		/// @brief Curent Milliseconds since at last input trigger
 		ulong currentMillis = 0;
@@ -62,7 +69,7 @@ class DigitalInputTrigger : public PeriodicTask {
 
 		bool configureInput();
 		void clearTrigger();
-		void trigger();
+		void IRAM_ATTR trigger();
 		void runTask(ulong elapsed);
 		JsonDocument addAdditionalConfig();
 };
