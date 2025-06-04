@@ -118,9 +118,9 @@ void DigitalInputTrigger::runTask(ulong elapsed) {
 		}
 		portEXIT_CRITICAL(&spinlock);
 		if (is_triggered) {
-			elapsedMillis = (cached_interrupt_time / 1000) - cached_current_millis;
+			uint64_t interrupt_millis = cached_interrupt_time / 1000ULL;
+			elapsedMillis = (interrupt_millis >= cached_current_millis) ? (interrupt_millis - cached_current_millis) : (ULONG_MAX - cached_current_millis + interrupt_millis);
 			ulong time = cached_last_runtime + elapsedMillis / 1000;
-			portEXIT_CRITICAL(&spinlock);
 			Logger.println("Event " + String(digital_config.id) + " triggered at " + String(time) + " " + String(elapsedMillis % 1000) + "ms");
 			clearTrigger();
 		}

@@ -20,11 +20,6 @@
 class DigitalInputTrigger : public PeriodicTask {
 	// All methods are protected since this should be inherited not instanced
 	protected:
-		DigitalInputTrigger(int Pin);
-		bool begin();
-		String getConfig();
-		bool setConfig(String config);
-		
 		// Mutex for thread safe ISR
 		portMUX_TYPE spinlock = portMUX_INITIALIZER_UNLOCKED;
 
@@ -67,9 +62,12 @@ class DigitalInputTrigger : public PeriodicTask {
 		/// @brief Unix timestamp at last input trigger
 		ulong lastRunTime = 0;
 
+		DigitalInputTrigger(int Pin);
+		bool begin();
+		String getConfig();
+		bool setConfig(String config);
 		bool configureInput();
 		void clearTrigger();
 		void IRAM_ATTR trigger();
 		void runTask(ulong elapsed);
-		JsonDocument addAdditionalConfig();
 };
