@@ -22,24 +22,5 @@
 	"license": "GPLv3",
 	"homepage": "https://github.com/FabricaIO",
 	"frameworks": "arduino",
-	"platforms": "*",
-	"fabrica-io" : {
-		"name": "InputTrigger",
-		"type": 4,
-		"category": "digital input",
-		"libname": "DigitalInputTrigger",
-		"includes": ["DigitalInputTrigger"],
-		"description": "Utility to help trigger events on digital input",
-		"constructor":
-		[
-			[
-				{
-					"name": "Pin",
-					"type": "int",
-					"description": "The pin to use",
-					"default": ""
-				}
-			]
-		]
-	}
+	"platforms": "*"
   }
